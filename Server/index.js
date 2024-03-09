@@ -8,6 +8,10 @@ app.use(express.json())// this will allow editing json
 const postRequest = require('./Routes/Posts');
 app.use('/posts', postRequest)
 
+// Serve static files from the 'upload' directory
+app.use(express.static('upload'));
+
+
 db.sequelize.sync().then(() => {
     app.listen(4001, () =>  {
         console.log('the server is running')

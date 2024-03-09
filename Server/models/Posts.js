@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         image: {
-            type: DataTypes.BLOB('long'),
+            type: DataTypes.TEXT,//save any image using the datatype text is much better
             allowNull:false
 
         }

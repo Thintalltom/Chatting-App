@@ -5,18 +5,16 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs"); // Import the fs module
 
-// Configure multer storage
+router.use(express.static('upload'))
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, "uploads");
-    // Check if the directory exists, if not, create it
-    fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir); // Directory where uploaded files will be stored
+  destination: (req, file, cb) => {
+  cb(null, './upload/images' )
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
-  },
-});
+      cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
+  }
+})
+
 
 // Create multer instance
 const upload = multer({ storage: storage });
@@ -32,7 +30,7 @@ router.post("/", upload.single('image'), async (req, res) => {
   try {
     // Assuming you have title and description fields along with the image
     const { title, postText, username, image } = req.body;
-    const imageUrl = req.file.path; // Assuming multer has added 'file' object to the request
+    const imageUrl = req.file.filename // Assuming multer has added 'file' object to the request
 
     // Create a new post object with image URL and other data
     const post = await Posts.create({ title, postText, username, image:imageUrl });
