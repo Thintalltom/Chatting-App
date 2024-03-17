@@ -7,6 +7,8 @@ app.use(express.json())// this will allow editing json
 //Routers
 const postRequest = require('./Routes/Posts');
 app.use('/posts', postRequest)
+const userRequest = require('./Routes/Users')
+app.use('/user', userRequest)
 
 // Serve static files from the 'upload' directory
 app.use(express.static('upload'));
