@@ -1,6 +1,16 @@
+import axios from "axios";
 import { useFormik } from "formik";
+import { useState } from "react";
 const Signup = () => {
+  const [show, setShow] = useState(false)
     const validate = (values) => {
+      const errors = {};
+      if (!values.email) {
+        errors.email = "Required";
+      } else if (!values.email.endsWith("@gmail.com")) {
+        errors.email = "Must be a valid Gmail address (e.g., example@gmail.com)";
+      }
+
         if(!values.password){
             errors.password = 'required';
         } else if( values.password.length < 10 )
@@ -10,10 +20,27 @@ const Signup = () => {
     }
     const formik = useFormik( {
         initialValues: {
-            email: '',
-            password: ''
+            email: "",
+            password: "",
         }, 
-        validate
+        validate, 
+        onSubmit: async( values, {resetForm}) => {
+          const formData = new FormData();
+
+          formData.append('email', values.email);
+          formData.append('Password', values.password);
+
+          try {
+            const response  = await axios.post('http://localhost:4001/signup/', formData, {
+              headers: {
+                'Content-Type' : 'multipart/form-data'
+              }
+            });
+            resetForm();  
+          } catch (error) {
+            console.log(error)
+          }
+        }
     })
   return (
     <div className="flex ">
@@ -27,23 +54,40 @@ const Signup = () => {
       </div>
       <div className="bg-white   w-full p-[20px]">
         <p className="text-xl font-bold">Create Account</p>
-        <form className="mt-[20px] gap-[40px]">
+        <form className="mt-[20px] gap-[40px]" onSubmit={formik.handleSubmit}>
           <input
             type="email"
             className="border-b-[2px] mt-[40px] w-[70%] rounded-[5px]"
-            placeholder="email"
-          />{" "}
+            name="email"
+              id="email"
+              placeholder="email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
+          />
+          {formik.errors.email ? (
+              <div>{formik.errors.email}</div>
+            ) : null}
           <br />
           <div className="mt-[20px]">
             <input
-              type="password"
+              type={ show ? "password" : 'text'}
+              placeholder="password"
               className="w-[70%] mt-[40px] border-b-[2px] rounded-[5px]"
-              placeholder="password "
+              name="password"
+              id="password"
+             
+              onChange={formik.handleChange}
+              value={formik.values.password}
             />
+            <p onClick={(e) => setShow(!show)} className="cursor-pointer">Show</p>
+               {formik.errors.password ? (
+              <div>{formik.errors.password}</div>
+            ) : null}
           </div>
+          <button type="submit" className="mt-[40px] text-center bg-red-500 w-[70%] p-[10px] rounded shadow-md text-white">Sign Up</button>
         </form>
         
-        <button className="mt-[40px] text-center bg-red-500 w-[70%] p-[10px] rounded shadow-md text-white">Sign Up</button>
+        
         <p className="mt-[20px]">Already have an account? signin</p>      
       </div>
     </div>
