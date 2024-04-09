@@ -11,6 +11,8 @@ const userRequest = require('./Routes/Users')
 app.use('/user', userRequest)
 const signUp = require('./Routes/Signup')
 app.use('/signup', signUp)
+const login = require('./Routes/Login')
+app.use('/login', login)
 
 // Serve static files from the 'upload' directory
 app.use(express.static('upload'));

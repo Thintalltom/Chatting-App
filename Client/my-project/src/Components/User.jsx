@@ -52,7 +52,6 @@ const User = () => {
                'Content-Type': 'multipart/form-data',
             }
          });
-         console.log('Response', response.formData)
          resetForm(); //this is to reset the form back to its normal state 
       } catch(error)
       {

@@ -1,31 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const {Signup} = require('../models')
+const { signups } = require('../models');
+const bcrypt = require('bcrypt');
 
-router.get('/', async (req, res) => {
-    const listofUsers = await Signup.findAll();
-    res.json(listofUsers)
-})
-
-router.post('/', async (req, res) => {
-    try {
-        // Extract user data from request body
-        const { email, Password } = req.body;
-
-        // Create a new user in the database
-        const newUser = await Signup.create({
-            email: email,
-            Password: Password
-        });
-
-        // Respond with the newly created user object
-        res.json(newUser);
-    } catch (error) {
-        // If an error occurs, respond with an error message
-        console.error("Error adding user:", error);
-        res.status(500).json({ error: 'Failed to add user' });
-    }
-
+router.post('/', async(req, res) => {
+   const {password, email} = req.body;
+   bcrypt.hash(password, 10).then((hash) => {
+    signups.create({
+        email: email,
+        password: hash
+    })
+    res.json('successfully login')
+   })
 });
+
+router.post('/login', async(req, res) => {
+    const {password, email} = req.body
+
+    const user = await signups.findOne({where: {email: email}});
+
+    if (!user) {
+        return res.status(404).json({ error: 'User does not exist' }); // Return early if user does not exist
+    }
+    bcrypt.compare(password, user.password).then((match) => {
+        if (!match) {
+            return res.status(401).json({ error: 'Wrong username and password combination' }); // Unauthorized, return 401
+        }
+
+        res.json('You are logged in');
+    });
+    
+})
 
 module.exports = router;

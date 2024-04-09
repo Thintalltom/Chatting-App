@@ -5,6 +5,7 @@ import { Routes, Route} from "react-router-dom";
 import Home from './Components/Home';
 import User from './Components/User';
 import Signup from './Components/Signup';
+import Login from './Components/Login';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path='/' element={ <Home data={data} />} />
           <Route path='/user' element={ <User/>} />
           <Route path='/signup' element={ <Signup />} />
+           <Route path='/login' element={<Login />} />
         </Routes>
     </>
   )

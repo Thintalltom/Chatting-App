@@ -2,46 +2,49 @@ import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
 const Signup = () => {
-  const [show, setShow] = useState(false)
-    const validate = (values) => {
-      const errors = {};
-      if (!values.email) {
-        errors.email = "Required";
-      } else if (!values.email.endsWith("@gmail.com")) {
-        errors.email = "Must be a valid Gmail address (e.g., example@gmail.com)";
-      }
-
-        if(!values.password){
-            errors.password = 'required';
-        } else if( values.password.length < 10 )
-        {
-            errors.password = 'must be greater than 10 charcaters'
-        }
+const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const validate = (values) => {
+    const errors = {};
+    if (!values.email) {
+      errors.email = "Required";
+    } else if (!values.email.endsWith("@gmail.com")) {
+      errors.email = "Must be a valid Gmail address (e.g., example@gmail.com)";
     }
-    const formik = useFormik( {
-        initialValues: {
-            email: "",
-            password: "",
-        }, 
-        validate, 
-        onSubmit: async( values, {resetForm}) => {
-          const formData = new FormData();
 
-          formData.append('email', values.email);
-          formData.append('Password', values.password);
+    if (!values.password) {
+      errors.password = "required";
+    } else if (values.password.length < 10) {
+      errors.password = "must be greater than 10 charcaters";
+    }
+  };
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    onSubmit: async (values, { resetForm }) => {
+      const formData = new FormData();
 
-          try {
-            const response  = await axios.post('http://localhost:4001/signup/', formData, {
-              headers: {
-                'Content-Type' : 'multipart/form-data'
-              }
-            });
-            resetForm();  
-          } catch (error) {
-            console.log(error)
+      formData.append("email", values.email);
+      formData.append("password", values.password);
+
+      try {
+        const response = await axios.post(
+          "http://localhost:4001/signup/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-        }
-    })
+        );
+        resetForm();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
   return (
     <div className="flex ">
       <div className="">
@@ -59,36 +62,37 @@ const Signup = () => {
             type="email"
             className="border-b-[2px] mt-[40px] w-[70%] rounded-[5px]"
             name="email"
-              id="email"
-              placeholder="email"
+            id="email"
+            placeholder="email"
             onChange={formik.handleChange}
             value={formik.values.email}
           />
-          {formik.errors.email ? (
-              <div>{formik.errors.email}</div>
-            ) : null}
+          {formik.errors.email ? <div>{formik.errors.email}</div> : null}
           <br />
           <div className="mt-[20px]">
             <input
-              type={ show ? "password" : 'text'}
+              type={show ? "password" : "text"}
               placeholder="password"
               className="w-[70%] mt-[40px] border-b-[2px] rounded-[5px]"
               name="password"
               id="password"
-             
               onChange={formik.handleChange}
               value={formik.values.password}
             />
-            <p onClick={(e) => setShow(!show)} className="cursor-pointer">Show</p>
-               {formik.errors.password ? (
-              <div>{formik.errors.password}</div>
-            ) : null}
+            <p onClick={(e) => setShow(!show)} className="cursor-pointer">
+              Show
+            </p>
+           
           </div>
-          <button type="submit" className="mt-[40px] text-center bg-red-500 w-[70%] p-[10px] rounded shadow-md text-white">Sign Up</button>
+          <button
+            type="submit"
+            className="mt-[40px] text-center bg-red-500 w-[70%] p-[10px] rounded shadow-md text-white"
+          >
+            Sign Up
+          </button>
         </form>
-        
-        
-        <p className="mt-[20px]">Already have an account? signin</p>      
+
+        <p className="mt-[20px]">Already have an account? signin</p>
       </div>
     </div>
   );
