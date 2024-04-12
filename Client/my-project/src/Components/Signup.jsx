@@ -1,28 +1,36 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+
 const Signup = () => {
-const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const validate = (values) => {
     const errors = {};
     if (!values.email) {
       errors.email = "Required";
-    } else if (!values.email.endsWith("@gmail.com")) {
-      errors.email = "Must be a valid Gmail address (e.g., example@gmail.com)";
+    } else if (!/^\S+@\S+\.\S+$/.test(values.email)) {
+      errors.email = "Invalid email address must include @gmail.com";
     }
 
     if (!values.password) {
-      errors.password = "required";
+      errors.password = "Required";
     } else if (values.password.length < 10) {
-      errors.password = "must be greater than 10 charcaters";
+      errors.password = "Password must be at least 10 characters long";
     }
+
+    return errors;
   };
+  
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
+    validate,
     onSubmit: async (values, { resetForm }) => {
       const formData = new FormData();
 
@@ -30,6 +38,7 @@ const [show, setShow] = useState(false);
       formData.append("password", values.password);
 
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://localhost:4001/signup/",
           formData,
@@ -39,9 +48,12 @@ const [show, setShow] = useState(false);
             },
           }
         );
+        setLoading(false);
+      navigate('/login')
         resetForm();
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     },
   });
@@ -67,7 +79,9 @@ const [show, setShow] = useState(false);
             onChange={formik.handleChange}
             value={formik.values.email}
           />
-          {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+         {formik.errors.email ? (
+            <div className="text-red-500">{formik.errors.email}</div>
+          ) : null}
           <br />
           <div className="mt-[20px]">
             <input
@@ -79,20 +93,25 @@ const [show, setShow] = useState(false);
               onChange={formik.handleChange}
               value={formik.values.password}
             />
-            <p onClick={(e) => setShow(!show)} className="cursor-pointer">
-              Show
+             <p onClick={() => setShow(!show)} className="cursor-pointer">
+              {show ? "show" : "hide"}
             </p>
-           
           </div>
+          {formik.errors.password ? (
+            <div className="text-red-500">{formik.errors.password}</div>
+          ) : null}
           <button
             type="submit"
-            className="mt-[40px] text-center bg-red-500 w-[70%] p-[10px] rounded shadow-md text-white"
+            className="mt-[40px] cursor-pointer hover:bg-red-700 text-center bg-red-500 w-[70%] p-[10px] rounded shadow-md text-white"
+            disabled={loading || !formik.isValid || !formik.dirty}
           >
-            Sign Up
+            {loading ? "Loading..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="mt-[20px]">Already have an account? signin</p>
+        <p className="mt-[20px]">
+          Already have an account? <Link to="/login" className="text-blue-600">login</Link>{" "}
+        </p>
       </div>
     </div>
   );
