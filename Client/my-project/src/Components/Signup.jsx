@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Signup = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errMessage, setErrMessage] = useState('')
   const navigate = useNavigate();
   const validate = (values) => {
     const errors = {};
@@ -54,6 +55,12 @@ const Signup = () => {
       } catch (error) {
         console.log(error);
         setLoading(false);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          console.error("Error response:", error.response.data.error);
+          setErrMessage(error.response.data.error); // Set error message in state
+        
+        }
       }
     },
   });
@@ -70,6 +77,7 @@ const Signup = () => {
       <div className="bg-white   w-full p-[20px]">
         <p className="text-xl font-bold">Create Account</p>
         <form className="mt-[20px] gap-[40px]" onSubmit={formik.handleSubmit}>
+        {errMessage && <div className="text-red-500">{errMessage}</div>}
           <input
             type="email"
             className="border-b-[2px] mt-[40px] w-[70%] rounded-[5px]"

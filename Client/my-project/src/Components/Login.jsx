@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-const Login = () => {
+const Login = ({formValues, setFormValues}) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [show, setShow] = useState(false);
+  const [error, setError] = useState('')
   const navigate = useNavigate();
   const validate = (values) => {
     const errors = {};
@@ -24,10 +25,7 @@ const Login = () => {
     return errors;
   };
   const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
+    initialValues:formValues,
     validate,
     onSubmit: async (values, { resetForm }) => {
       const formData = new FormData();
@@ -45,8 +43,11 @@ const Login = () => {
           }
         );
         navigate('/')
+        console.log(formValues)
         resetForm();
       } catch (error) {
+        console.error("Error response:", error.response.data.error);
+        
         if (error.response && error.response.status === 404) {
           setErrorMessage(
             "User not found. Please check your email and password."
@@ -58,6 +59,14 @@ const Login = () => {
       }
     },
   });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormValues({ ...formValues, [name]: value });
+    formik.handleChange(event);
+    console.log(formValues)
+  };
+
   return (
     <div>
       <div className="flex ">
@@ -69,12 +78,13 @@ const Login = () => {
         </div>
         <div className="bg-white w-full p-[20px]">
           <form className="mt-[20px] gap-[40px]" onSubmit={formik.handleSubmit}>
+          {errorMessage && <div className="text-red-500">{errorMessage}</div>}
             <input
               type="email"
               name="email"
               placeholder="Email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
+              value={formValues.email}
+              onChange={handleChange}
               className="border-b-[2px] mt-[40px] w-[70%] rounded-[5px]"
             />
              {formik.errors.email ? (
@@ -86,8 +96,8 @@ const Login = () => {
               type={show ? "password" : "text"}
               name="password"
               placeholder="Password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
+              value={formValues.password}
+              onChange={handleChange}
             />
             <p onClick={() => setShow(!show)} className="cursor-pointer">
               {show ? "show" : "hide"}

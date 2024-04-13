@@ -6,10 +6,15 @@ import Home from './Components/Home';
 import User from './Components/User';
 import Signup from './Components/Signup';
 import Login from './Components/Login';
+import Topbar from './Components/Topbar';
 
 
 function App() {
   const[data, setData] = useState([])
+  const [formValues, setFormValues] = useState({
+    email: '',
+    password: ''
+  })
   useEffect(() => {
     axios.get("http://localhost:4001/posts").then((response) => {
     console.log(response.data)
@@ -19,12 +24,13 @@ function App() {
 
   return (
     <>
+   
        <Routes>
-
-          <Route path='/' element={ <Home data={data} />} />
+    
+          <Route path='/' element={ <Home data={data} formValues={formValues} />} />
           <Route path='/user' element={ <User/>} />
           <Route path='/signup' element={ <Signup />} />
-           <Route path='/login' element={<Login />} />
+           <Route path='/login' element={<Login formValues={formValues} setFormValues={setFormValues} />} />
         </Routes>
     </>
   )
