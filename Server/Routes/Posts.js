@@ -4,6 +4,7 @@ const { Posts } = require("../models"); //destructure the Post from the model
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs"); // Import the fs module
+const {Comments} = require('./Comments')
 
 router.use(express.static('upload'))
 const storage = multer.diskStorage({
@@ -24,6 +25,7 @@ router.get("/", async (req, res) => {
   const listofPosts = await Posts.findAll();
   res.json(listofPosts);
 });
+
 
 router.post("/", upload.single('image'), async (req, res) => {
   try {
@@ -47,5 +49,14 @@ router.post("/", upload.single('image'), async (req, res) => {
     }
   }
 });
+
+router.get("/byId/:id", async (req, res) => {
+ 
+    const id = req.params.id;
+    const post = await Posts.findByPk(id); // Assuming you have a 'Posts' model with a primary key 'id'
+    res.json(post)
+});
+
+
 
 module.exports = router;

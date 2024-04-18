@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import PostDetail from './Components/PostDetail';
 import axios from 'axios';
 import { Routes, Route} from "react-router-dom";
 import Home from './Components/Home';
@@ -31,6 +32,7 @@ function App() {
           <Route path='/user' element={ <User/>} />
           <Route path='/signup' element={ <Signup />} />
            <Route path='/login' element={<Login formValues={formValues} setFormValues={setFormValues} />} />
+        <Route path='/post/:id' element={<PostDetail />} />
         </Routes>
     </>
   )

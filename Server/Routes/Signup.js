@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { signups } = require('../models');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+router.use(cookieParser());
 
 router.post('/', async(req, res) => {
    const {password, email} = req.body;
@@ -33,7 +35,7 @@ router.post('/login', async (req, res) => {
         if (!match) {
             return res.status(401).json({ error: 'Wrong email and password combination' });
         }
-
+        res.cookie('userId', user.id, { httpOnly: true, secure: true });
         res.json('You are logged in');
     }).catch(err => {
         console.error('Error comparing passwords:', err);
