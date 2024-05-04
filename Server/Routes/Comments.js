@@ -4,7 +4,7 @@ const { Comments } = require('../models');
 
 router.get('/:postId', async (req, res) => {
     const postId = req.params.postId; // Corrected variable name
-    const comments = await Comments.findAll({ where: { postId: postId } }); // Corrected variable name
+    const comments = await Comments.findAll({ where: { PostId: postId } }); // Corrected variable name
     res.json(comments);
 });
 

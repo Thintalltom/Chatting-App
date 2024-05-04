@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const Yourpost = ({ data, index }) => {
   const [count, setCount] = useState(0);
   const [icon, setIcon] = useState(false);
-  const [comment, setComment] = useState('')
+  const [commentValue, setCommentValue] = useState('');
   const {id} = useParams
   const navigate = useNavigate()
 
@@ -22,21 +22,30 @@ const Yourpost = ({ data, index }) => {
   };
 
   const commentData = (e) => {
-    setComment(e.target.value)
+    setCommentValue(e.target.value)
   }
 
-  const formData = new FormData();
+  
 
-  const comments = () => {
-    formData.append('commentBody', comment)
-    axios.post('http://localhost:4001/comment', formData).then((response) => {
-      console.log(response.data)
-    })
-  }
+  const handleSubmitComment = (e) => {
+    e.preventDefault();
+    const commentData = {
+      commentBody: commentValue
+    }; // Updated to use the correct state variable
+    axios.post('http://localhost:4001/comment', commentData)
+      .then((response) => {
+        console.log(response.data);
+        // Optionally, you can clear the comment input after successful submission
+        setCommentValue('');
+      })
+      .catch((error) => {
+        console.error("Error submitting comment:", error);
+      });
+  };
 
   const getComments = () => {
     axios.get(`http://localhost:4001/comment/${id}`).then((response) => {
-      setComment(response.data)
+      setCommentValue(response.data)
     })
   }
 
@@ -45,8 +54,8 @@ const Yourpost = ({ data, index }) => {
   },[id])
 
   useEffect(() => {
-    comments
-  })
+    handleSubmitComment
+  },[])
   
 
   return (
@@ -54,12 +63,13 @@ const Yourpost = ({ data, index }) => {
       <div
         key={index}
         className="border-2 cursor-pointer border-b-0 p-[10px] mt-[20px] w-[400px] h-[450px] gap-[20px]"
-        onClick={() => {navigate(`/post/${data.id}`)}}
+     
       >
         <p>user_{data.username}</p>
         <img
           className="w-[400px] h-[300px]"
           src={`http://localhost:4001/posts/images/` + data.image}
+          onClick={() => {navigate(`/post/${data.id}`)}}
         />
         <p>{data.title}</p>
         <p>{data.postText}</p>
@@ -83,12 +93,13 @@ const Yourpost = ({ data, index }) => {
           placeholder="comment"
           className=" p-[2px]  w-[300px] rounded"
           onChange={commentData}
-          value={comment}
+          value={commentValue}
         />
-        <button className="bg-slate-900 text-white w-[80px] h-[30px]">Send</button>
+         <button className="bg-slate-900 text-white w-[80px] h-[30px]" onClick={handleSubmitComment}>Send</button>
+      
       </div>
 
-      {comment}
+      {commentValue}
     </div>
   );
 };

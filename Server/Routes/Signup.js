@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 router.use(cookieParser());
 
+const {sign} = require('jsonwebtoken') //sign is used to create a token
+
 router.post('/', async(req, res) => {
    const {password, email} = req.body;
     // Check if the email already exists in the database
@@ -34,9 +36,10 @@ router.post('/login', async (req, res) => {
     bcrypt.compare(password, user.password).then((match) => {
         if (!match) {
             return res.status(401).json({ error: 'Wrong email and password combination' });
-        }
-        res.cookie('userId', user.id, { httpOnly: true, secure: true });
-        res.json('You are logged in');
+        };
+        const accessToken = sign({email: email}, 'Sydneymydog' ) //this is accesstoken created using sign
+        res.json(accessToken);
+
     }).catch(err => {
         console.error('Error comparing passwords:', err);
         res.status(500).json({ error: 'Internal Server Error' });

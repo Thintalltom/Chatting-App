@@ -28,36 +28,16 @@ const Login = ({formValues, setFormValues}) => {
     initialValues:formValues,
     validate,
     onSubmit: async (values, { resetForm }) => {
-      const formData = new FormData();
-      formData.append("password", values.password);
-      formData.append("email", values.email);
-
-      try {
-        const response = await axios.post(
-          "http://localhost:4001/signup/login/",
-          formData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        navigate('/')
-        console.log(formValues)
-        resetForm();
-      } catch (error) {
-        console.error("Error response:", error.response.data.error);
-        
-        if (error.response && error.response.status === 404) {
-          setErrorMessage(
-            "User not found. Please check your email and password."
-          );
-        } else {
-          setErrorMessage("An error occurred. Please try again later.");
-        }
-        console.error("Error during login:", error);
-      }
-    },
+    const data = {email: values.email, password: values.password};
+    axios.post( "http://localhost:4001/signup/login/", data).then((response) => {
+      if(response){
+        console.log(response)//check if there is an error first
+      } 
+        sessionStorage.setItem('accessToken', response.data) // store the response datae in a session
+      navigate('/')
+     
+    })
+    }
   });
 
   const handleChange = (event) => {
